@@ -11,14 +11,14 @@ public class AppDbContext : DbContext
     {
     }
 
-    protected override void OnModelCreating(ModelBuilder builder)
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        builder.AddUser();
+        modelBuilder.AddUser();
 
-        builder.AddGlobalHasQueryFilterForBaseTypeEntities<BaseAuditableEntity>(x => x.IsActive);
+        modelBuilder.AddGlobalHasQueryFilterForBaseTypeEntities<BaseAuditableEntity>(x => x.IsActive);
 
-        builder.ConvertToSnakeCase();
+        modelBuilder.ConvertToSnakeCase();
 
-        base.OnModelCreating(builder);
+        base.OnModelCreating(modelBuilder);
     }
 }
