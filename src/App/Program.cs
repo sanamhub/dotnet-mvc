@@ -1,9 +1,35 @@
 using App.Configurations;
+using Serilog;
+using Serilog.Events;
 
-var builder = WebApplication.CreateBuilder(args);
-builder.AddServicesToContainer();
+Log.Logger = new LoggerConfiguration()
+    .MinimumLevel.Debug()
+    .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
+    .Enrich.FromLogContext()
+    .WriteTo.Console()
+    .CreateLogger();
 
-var app = builder.Build();
-app.ConfigureHttpRequestPipeline();
+try
+{
+    Log.Information("Starting the web application");
 
-app.Run();
+    var builder = WebApplication.CreateBuilder(args);
+
+    builder.AddServicesToContainer();
+
+    var app = builder.Build();
+    app.ConfigureHttpRequestPipeline();
+
+    app.Run();
+}
+catch (Exception ex)
+{
+    Log.Fatal(ex, "Host terminated unexpectedly");
+    return 1;
+}
+finally
+{
+    await Log.CloseAndFlushAsync();
+}
+
+return 0;

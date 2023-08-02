@@ -1,6 +1,7 @@
 ﻿using App.Base.Configurations;
 using App.User.Configurations;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Serilog;
 
 namespace App.Configurations;
 
@@ -12,6 +13,10 @@ public static class ConfigureProgram
     /// <param name="builder">WebApplicationBuilder</param>
     public static void AddServicesToContainer(this WebApplicationBuilder builder)
     {
+        builder.Host.UseSerilog((context, services, configuration) => configuration
+        .ReadFrom.Configuration(context.Configuration)
+        .ReadFrom.Services(services));
+
         builder.Services.AddControllersWithViews();
 
         builder.Services.AddBase();
@@ -35,11 +40,12 @@ public static class ConfigureProgram
     /// <returns>WebApplication</returns>
     public static WebApplication ConfigureHttpRequestPipeline(this WebApplication app)
     {
-        // Configure the HTTP request pipeline.
+        app.UseSerilogRequestLogging(configure =>
+        configure.MessageTemplate = "HTTP {RequestMethod} {RequestPath} ({UserId}) responded {StatusCode} in {Elapsed:0.0000}ms");
+
         if (!app.Environment.IsDevelopment())
         {
             app.UseExceptionHandler("/Home/Error");
-            // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
             app.UseHsts();
         }
 
