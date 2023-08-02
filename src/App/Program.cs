@@ -3,7 +3,6 @@ using Serilog;
 using Serilog.Events;
 
 Log.Logger = new LoggerConfiguration()
-    .MinimumLevel.Debug()
     .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
     .Enrich.FromLogContext()
     .WriteTo.Console()
@@ -11,10 +10,9 @@ Log.Logger = new LoggerConfiguration()
 
 try
 {
-    Log.Information("Starting the web application");
+    Log.Information("Starting the web host");
 
     var builder = WebApplication.CreateBuilder(args);
-
     builder.AddServicesToContainer();
 
     var app = builder.Build();
