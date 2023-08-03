@@ -28,6 +28,7 @@ public static class DiConfig
         ;
 
     public static IServiceCollection AddServices(this IServiceCollection services) => services
+        .AddScoped<IAuthService, AuthService>()
         .AddScoped<IUserService, UserService>()
         ;
 

@@ -25,6 +25,8 @@ internal class UserValidator : IUserValidator
         if (await _userRepository.NotExistsAsync(x => x.Email == email))
             throw new UserNotExistsException(email);
 
+        // todo: validate password or elsewhere
+
         return true;
     }
 }
