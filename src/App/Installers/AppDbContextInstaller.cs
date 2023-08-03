@@ -9,9 +9,7 @@ public class AppDbContextInstaller : IInstaller
     public void InstallServices(WebApplicationBuilder builder)
     {
         builder.Services.AddDbContext<AppDbContext>(options =>
-        {
-            options.UseNpgsql(builder.Configuration["ConnectionStrings:DefaultConnection"]);
-        });
+        options.UseNpgsql(builder.Configuration["ConnectionStrings:DefaultConnection"]));
 
         builder.Services.AddScoped<DbContext, AppDbContext>();
     }
