@@ -32,7 +32,7 @@ public class Repository<T> : IRepository<T> where T : class
 
     public bool NotExists(Expression<Func<T, bool>> predicate) => !GetQueryable().Any(predicate);
 
-    public async Task<bool> NoExistsAsync(Expression<Func<T, bool>> predicate, CancellationToken cancellationToken = default) => !await GetQueryable(predicate).AnyAsync(cancellationToken);
+    public async Task<bool> NotExistsAsync(Expression<Func<T, bool>> predicate, CancellationToken cancellationToken = default) => !await GetQueryable(predicate).AnyAsync(cancellationToken);
 
     public IEnumerable<T> Get(Expression<Func<T, bool>> filter = null, Func<IQueryable<T>, IOrderedQueryable<T>> orderBy = null, string includeProperties = "", int? pageNumber = null, int? pageSize = null, bool enableNoTracking = true, bool ignoreQueryFilters = false)
     {

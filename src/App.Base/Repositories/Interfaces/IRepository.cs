@@ -48,7 +48,7 @@ public interface IRepository<T> where T : class
 
     bool NotExists(Expression<Func<T, bool>> predicate);
 
-    Task<bool> NoExistsAsync(Expression<Func<T, bool>> predicate, CancellationToken cancellationToken = default);
+    Task<bool> NotExistsAsync(Expression<Func<T, bool>> predicate, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Get entity

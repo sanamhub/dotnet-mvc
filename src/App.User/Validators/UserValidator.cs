@@ -22,7 +22,7 @@ internal class UserValidator : IUserValidator
 
     public async Task<bool> ValidateEmailOrThrowAsync(string email)
     {
-        if (await _userRepository.NoExistsAsync(x => x.Email == email))
+        if (await _userRepository.NotExistsAsync(x => x.Email == email))
             throw new UserNotExistsException(email);
 
         return true;
