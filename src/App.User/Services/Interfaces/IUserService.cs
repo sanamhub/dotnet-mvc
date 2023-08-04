@@ -1,6 +1,10 @@
-﻿namespace App.User.Services.Interfaces;
+﻿using App.User.Dtos;
+
+namespace App.User.Services.Interfaces;
 
 public interface IUserService
 {
-    // todo register
+    Task RegisterAsync(UserDto dto);
+
+    Task LoginAsync(UserDto dto);
 }

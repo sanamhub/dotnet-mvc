@@ -1,4 +1,8 @@
 ﻿using System.Security.Claims;
+using App.Base.Helpers;
+using App.User.Dtos;
+using App.User.Services.Interfaces;
+using App.User.Validators.Interfaces;
 using App.ViewModels;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -11,10 +15,24 @@ namespace App.Controllers;
 public class AuthController : Controller
 {
     private readonly ILogger<AuthController> _logger;
+    private readonly IUserValidator _userValidator;
+    private readonly IUserService _userService;
+    private readonly string _adminUsername;
+    private readonly string _adminEmail;
+    private readonly string _adminPassword;
 
-    public AuthController(ILogger<AuthController> logger)
+    public AuthController(
+        ILogger<AuthController> logger,
+        IUserValidator userValidator,
+        IUserService userService
+        )
     {
         _logger = logger;
+        _userValidator = userValidator;
+        _userService = userService;
+        _adminUsername = "admin";
+        _adminEmail = "admin@app.com";
+        _adminPassword = "Admin@p1p2p3";
     }
 
     public IActionResult Login()
@@ -27,16 +45,31 @@ public class AuthController : Controller
             return RedirectToAction("Index", "Home");
         }
 
-        return View();
+        return View(new LoginVm());
     }
 
     [HttpPost]
     public async Task<IActionResult> Login(LoginVm vm)
     {
-        _logger.LogInformation("Login initiated by {Email}", vm.Email);
+        try
+        {
+            _logger.LogInformation("Login initiated by {Email}", vm.Email);
 
-        // authenticate (temp for now)
-        if (vm.Email == "sa@sa.sa" && vm.Password == "123")
+            await _userService.LoginAsync(new UserDto(string.Empty, vm.Email, vm.Password));
+
+            await ContextSignInAsync(vm);
+
+            _logger.LogInformation("Login successful, redirecting");
+
+            return RedirectToAction("Index", "Home");
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning("Login not successful");
+            return View(new LoginVm { WarnMessage = ex.Message });
+        }
+
+        async Task ContextSignInAsync(LoginVm vm)
         {
             var claims = new List<Claim>
             {
@@ -53,16 +86,7 @@ public class AuthController : Controller
             };
 
             await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(identity), properties);
-
-            _logger.LogInformation("Login successful, redirecting");
-
-            return RedirectToAction("Index", "Home");
         }
-
-        _logger.LogWarning("Login not successful");
-
-        ViewData["ValidationMessage"] = "Invalid email or password";
-        return View();
     }
 
     public async Task<IActionResult> Logout()
@@ -76,5 +100,26 @@ public class AuthController : Controller
         _logger.LogInformation("Logout successful");
 
         return RedirectToAction(nameof(Login));
+    }
+
+    public async Task<IActionResult> Seed()
+    {
+        try
+        {
+            _logger.LogInformation("Seed initiated");
+
+            using var txn = TxnScopeHelper.NewTxnScope;
+            if (await _userValidator.IsUserNotExistsAsync(_adminEmail))
+                await _userService.RegisterAsync(new UserDto(_adminUsername, _adminEmail, _adminPassword));
+
+            _logger.LogInformation("Seeding successful, redirecting to login");
+
+            return RedirectToAction(nameof(Login));
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, ex.Message);
+            return RedirectToAction(nameof(Login), new LoginVm { WarnMessage = ex.Message });
+        }
     }
 }
