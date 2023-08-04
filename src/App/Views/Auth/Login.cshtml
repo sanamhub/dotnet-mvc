@@ -110,9 +110,9 @@
             </label>
             <button type="submit">Login</button>
 
-            @if (ViewData["ValidationMessage"] is not null)
+            @if (!string.IsNullOrEmpty(Model.WarnMessage))
             {
-                <div class="validation-message">@ViewData["ValidationMessage"]</div>
+                <div class="validation-message">@Model.WarnMessage</div>
             }
         </form>
     </div>

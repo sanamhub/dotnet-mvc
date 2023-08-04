@@ -2,4 +2,5 @@
 
 public interface IUserProvider
 {
+    Task<string> GetPasswordAsync(string email);
 }

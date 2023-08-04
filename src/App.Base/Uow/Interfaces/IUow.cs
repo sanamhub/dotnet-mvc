@@ -2,7 +2,7 @@
 
 namespace App.Base.Uow.Interfaces;
 
-internal interface IUow
+public interface IUow
 {
     DbContext Context { get; }
 

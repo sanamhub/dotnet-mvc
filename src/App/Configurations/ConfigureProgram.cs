@@ -40,8 +40,7 @@ public static class ConfigureProgram
     /// <returns>WebApplication</returns>
     public static WebApplication ConfigureHttpRequestPipeline(this WebApplication app)
     {
-        app.UseSerilogRequestLogging(configure => configure
-        .MessageTemplate = "HTTP {RequestMethod} {RequestPath} ({UserId}) responded {StatusCode} in {Elapsed:0.0000}ms");
+        app.UseSerilogRequestLogging();
 
         if (!app.Environment.IsDevelopment())
         {

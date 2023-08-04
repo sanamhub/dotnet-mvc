@@ -4,7 +4,7 @@ public class BaseAuditableEntity : BaseEntity
 {
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
-    public long CreatedBy { get; set; }
+    public required long CreatedBy { get; set; }
 
     public bool IsActive { get; set; } = true;
 
